@@ -1,193 +1,210 @@
 import streamlit as st
-import plotly.graph_objects as go
-import pandas as pd
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css
-
-st.set_page_config(page_title="Revenue Predictor — Vendora", page_icon="💰", layout="wide")
+from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css, require_login
+ 
+st.set_page_config(page_title="Earnings Calculator — Vendora", page_icon="💰", layout="wide")
 apply_css()
-
+require_login()
+ 
 st.markdown("""
-<div style="margin-bottom:4px;">
-  <span style="font-size:2rem; font-weight:900; color:#0F172A;">💰 Revenue Predictor</span>
+<div style="margin-bottom:6px;">
+  <span style="font-size:2rem; font-weight:900; color:#0F172A;">💰 Earnings Calculator</span>
 </div>
-<div style="color:#64748B; font-size:0.92rem; margin-bottom:1.5rem;">
-  Estimate earnings, simulate customer scenarios, and calculate your break-even — before you book.
+<div style="color:#64748B; font-size:1rem; margin-bottom:1.5rem;">
+  Pick a market and food type — we'll tell you <strong>how much you could earn</strong>,
+  whether you'll make a profit, and <strong>how many items you need to sell</strong> to cover your costs.
 </div>
 """, unsafe_allow_html=True)
-
+ 
 # ── Inputs ────────────────────────────────────────────────────────────────────
 col1, col2 = st.columns(2)
 with col1:
-    category = st.selectbox("Your Food Category", CATEGORIES)
+    category = st.selectbox("🍽️ Your Food Type", CATEGORIES)
 with col2:
-    market = st.selectbox("Select Market", MARKETS['Market Name'].tolist())
-
-market_type = MARKETS.loc[MARKETS['Market Name'] == market, 'Type'].values[0]
-stall_price = int(MARKETS.loc[MARKETS['Market Name'] == market, 'Stall Price'].values[0])
-footfall    = int(MARKETS.loc[MARKETS['Market Name'] == market, 'Expected Footfall'].values[0])
+    market = st.selectbox("📍 Select Market", MARKETS['Market Name'].tolist())
+ 
+market_row  = MARKETS[MARKETS['Market Name'] == market].iloc[0]
+market_type = market_row['Type']
+stall_price = int(market_row['Stall Price'])
+footfall    = int(market_row['Expected Footfall'])
 rev         = REVENUE_DATA[category][market_type]
-
-st.divider()
-
-# ── Revenue estimate cards ────────────────────────────────────────────────────
-profit_low  = rev['low']  - stall_price
-profit_avg  = rev['avg']  - stall_price
+profit_avg  = rev['avg'] - stall_price
+profit_low  = rev['low'] - stall_price
 profit_high = rev['high'] - stall_price
-
+ 
+st.markdown("<br>", unsafe_allow_html=True)
+ 
+# ── Big earnings display ──────────────────────────────────────────────────────
+if profit_avg > 800:
+    profit_label = "🟢 Strong profit"
+    profit_color = "#43A047"
+elif profit_avg > 0:
+    profit_label = "🟡 Moderate profit"
+    profit_color = "#F9A825"
+else:
+    profit_label = "🔴 May not cover costs"
+    profit_color = "#E53935"
+ 
 st.markdown(f"""
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:1.2rem;">
-  <div style="background:#FFF3F0; border:1.5px solid #FFCCBC; border-radius:14px; padding:18px; text-align:center;">
-    <div style="font-size:0.7rem; color:#BF360C; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Worst Case</div>
-    <div style="font-size:1.9rem; font-weight:900; color:#E64A19; margin:6px 0;">₹{rev['low']:,}</div>
-    <div style="font-size:0.75rem; color:#78909C;">Profit: ₹{profit_low:,}</div>
-  </div>
-  <div style="background:#FFF8E1; border:1.5px solid #FFE082; border-radius:14px; padding:18px; text-align:center;">
-    <div style="font-size:0.7rem; color:#F57F17; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Average Day</div>
-    <div style="font-size:1.9rem; font-weight:900; color:#F9A825; margin:6px 0;">₹{rev['avg']:,}</div>
-    <div style="font-size:0.75rem; color:#78909C;">Profit: ₹{profit_avg:,}</div>
-  </div>
-  <div style="background:#F1F8E9; border:1.5px solid #C5E1A5; border-radius:14px; padding:18px; text-align:center;">
-    <div style="font-size:0.7rem; color:#33691E; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Best Case</div>
-    <div style="font-size:1.9rem; font-weight:900; color:#558B2F; margin:6px 0;">₹{rev['high']:,}</div>
-    <div style="font-size:0.75rem; color:#78909C;">Profit: ₹{profit_high:,}</div>
-  </div>
-  <div style="background:#EDE7F6; border:1.5px solid #CE93D8; border-radius:14px; padding:18px; text-align:center;">
-    <div style="font-size:0.7rem; color:#4A148C; font-weight:700; text-transform:uppercase; letter-spacing:0.08em;">Stall Fee</div>
-    <div style="font-size:1.9rem; font-weight:900; color:#6A1B9A; margin:6px 0;">₹{stall_price:,}</div>
-    <div style="font-size:0.75rem; color:#78909C;">{market_type}</div>
-  </div>
+<div class="earn-main">
+    <div style="font-size:0.85rem; font-weight:700; text-transform:uppercase;
+                letter-spacing:0.1em; opacity:0.8; margin-bottom:10px;">
+        On a normal day at {market}
+    </div>
+    <div style="font-size:3.8rem; font-weight:900; letter-spacing:-2px; margin-bottom:4px;">
+        ₹{rev['avg']:,}
+    </div>
+    <div style="font-size:1rem; opacity:0.85; margin-bottom:14px;">
+        estimated earnings
+    </div>
+    <div style="display:inline-block; background:rgba(255,255,255,0.2); border-radius:30px;
+                padding:6px 20px; font-size:0.9rem; font-weight:700; margin-bottom:10px;">
+        After ₹{stall_price:,} stall rent → <strong>₹{profit_avg:,} profit</strong>
+    </div>
+    <br>
+    <div style="display:inline-block; background:{profit_color}; border-radius:12px;
+                padding:6px 16px; font-size:0.9rem; font-weight:800; color:white;">
+        {profit_label}
+    </div>
 </div>
 """, unsafe_allow_html=True)
-
-if profit_low < 0:
-    st.error(f"⚠️ On a bad day you may not cover the stall fee. Average profit: **₹{profit_avg:,}**")
-elif profit_avg > 1500:
-    st.success(f"✅ Strong opportunity — avg profit after stall fee: **₹{profit_avg:,}**")
-else:
-    st.info(f"Moderate opportunity — avg profit after stall fee: **₹{profit_avg:,}**")
-
-# ── Gauge ─────────────────────────────────────────────────────────────────────
-fig_gauge = go.Figure(go.Indicator(
-    mode="gauge+number",
-    value=rev['avg'],
-    title={'text': f"Expected Avg Daily Revenue · {market_type}", 'font': {'size': 14}},
-    number={'prefix': '₹', 'valueformat': ','},
-    gauge={
-        'axis': {'range': [0, 7500]},
-        'bar': {'color': '#FF6B35'},
-        'steps': [
-            {'range': [0,    1050], 'color': '#FFCDD2'},
-            {'range': [1050, 2800], 'color': '#FFF9C4'},
-            {'range': [2800, 7500], 'color': '#C8E6C9'},
-        ],
-        'threshold': {'line': {'color': 'red', 'width': 4}, 'thickness': 0.75, 'value': 1050}
-    }
-))
-fig_gauge.update_layout(height=290, margin=dict(t=50, b=10))
-st.plotly_chart(fig_gauge, use_container_width=True)
-st.caption("Red line = ₹1,050 break-even threshold")
-
-st.divider()
-
-# ── Cross-market comparison ───────────────────────────────────────────────────
-st.subheader(f"How {category} performs across all market types")
-comp_rows = [{'Market Type': mt, 'Low': v['low'], 'Average': v['avg'], 'High': v['high']}
-             for mt, v in REVENUE_DATA[category].items()]
-comp_df = pd.DataFrame(comp_rows).sort_values('Average', ascending=True)
-
-fig_bar = go.Figure()
-fig_bar.add_trace(go.Bar(name='Low',     x=comp_df['Market Type'], y=comp_df['Low'],     marker_color='#FFCDD2'))
-fig_bar.add_trace(go.Bar(name='Average', x=comp_df['Market Type'], y=comp_df['Average'], marker_color='#FF6B35'))
-fig_bar.add_trace(go.Bar(name='High',    x=comp_df['Market Type'], y=comp_df['High'],    marker_color='#C8E6C9'))
-fig_bar.update_layout(barmode='group', height=380, yaxis_title='Revenue (₹)', legend_title='Scenario')
-st.plotly_chart(fig_bar, use_container_width=True)
-
-st.divider()
-
-# ── Break-even Calculator ─────────────────────────────────────────────────────
-st.subheader("🧮 Break-Even Calculator")
-col1, col2, col3 = st.columns(3)
-with col1:
-    ingredient_cost = st.number_input("Daily Ingredient Cost (₹)", min_value=0, value=400, step=50)
-with col2:
-    avg_item_price  = st.number_input("Avg Selling Price per Item (₹)", min_value=1, value=60, step=5)
-with col3:
-    transport_cost  = st.number_input("Transport / Misc Cost (₹)", min_value=0, value=100, step=50)
-
-total_cost   = stall_price + ingredient_cost + transport_cost
-units_needed = -(-total_cost // avg_item_price)
-
-st.markdown(f"""
-| Item | Amount |
-|---|---|
-| Stall Fee | ₹{stall_price:,} |
-| Ingredient Cost | ₹{ingredient_cost:,} |
-| Transport / Misc | ₹{transport_cost:,} |
-| **Total Daily Cost** | **₹{total_cost:,}** |
-| Selling Price per Item | ₹{avg_item_price} |
-| **Items Needed to Break Even** | **{units_needed} items** |
-""")
-
-surplus = rev['avg'] - total_cost
-if surplus > 0:
-    st.success(f"✅ At average revenue (₹{rev['avg']:,}) you'd clear costs with a **₹{surplus:,} surplus**.")
-else:
-    st.error(f"⚠️ Average revenue (₹{rev['avg']:,}) may not cover total costs (₹{total_cost:,}). Consider a higher-footfall market.")
-
-st.divider()
-
-# ── LIVE REVENUE SIMULATOR ────────────────────────────────────────────────────
+ 
+# ── 3 scenario cards ──────────────────────────────────────────────────────────
 st.markdown("""
-<div style="background:#0F172A; border-radius:16px; padding:28px 28px 20px; margin-bottom:1rem;">
-  <div style="font-size:1.15rem; font-weight:800; color:white; margin-bottom:4px;">⚡ Live Revenue Simulator</div>
-  <div style="color:#94A3B8; font-size:0.85rem;">Drag the sliders — revenue updates in real time</div>
+<div style="font-weight:700; color:#0F172A; font-size:1rem; margin:16px 0 10px;">
+    📊 Three Possible Outcomes
 </div>
 """, unsafe_allow_html=True)
-
+ 
+sc1, sc2, sc3 = st.columns(3)
+sc1.markdown(f"""
+<div class="sc-bad">
+    <div style="font-size:1.4rem; margin-bottom:4px;">😕</div>
+    <div style="font-size:0.75rem; font-weight:700; color:#B71C1C;
+                text-transform:uppercase; margin-bottom:6px;">Slow Day</div>
+    <div style="font-size:1.6rem; font-weight:900; color:#C62828;">₹{rev['low']:,}</div>
+    <div style="font-size:0.8rem; color:#78909C; margin-top:4px;">
+        Profit: ₹{profit_low:,}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+ 
+sc2.markdown(f"""
+<div class="sc-normal">
+    <div style="font-size:1.4rem; margin-bottom:4px;">😊</div>
+    <div style="font-size:0.75rem; font-weight:700; color:#1B5E20;
+                text-transform:uppercase; margin-bottom:6px;">Normal Day</div>
+    <div style="font-size:1.6rem; font-weight:900; color:#2E7D32;">₹{rev['avg']:,}</div>
+    <div style="font-size:0.8rem; color:#78909C; margin-top:4px;">
+        Profit: ₹{profit_avg:,}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+ 
+sc3.markdown(f"""
+<div class="sc-great">
+    <div style="font-size:1.4rem; margin-bottom:4px;">🤩</div>
+    <div style="font-size:0.75rem; font-weight:700; color:#4527A0;
+                text-transform:uppercase; margin-bottom:6px;">Great Day</div>
+    <div style="font-size:1.6rem; font-weight:900; color:#512DA8;">₹{rev['high']:,}</div>
+    <div style="font-size:0.8rem; color:#78909C; margin-top:4px;">
+        Profit: ₹{profit_high:,}
+    </div>
+</div>
+""", unsafe_allow_html=True)
+ 
+st.markdown("<br>", unsafe_allow_html=True)
+st.divider()
+ 
+# ── Play with your numbers ────────────────────────────────────────────────────
+st.markdown("""
+<div style="background:#0F172A; border-radius:18px; padding:24px 24px 18px; margin-bottom:1.2rem;">
+    <div style="font-size:1.15rem; font-weight:800; color:white; margin-bottom:4px;">
+        ⚡ Play With Your Numbers
+    </div>
+    <div style="color:#94A3B8; font-size:0.88rem;">
+        Drag the sliders to see how your earnings change
+    </div>
+</div>
+""", unsafe_allow_html=True)
+ 
 col1, col2, col3 = st.columns(3)
 with col1:
-    est_customers    = st.slider("Expected Customers", 20, 450, 120, step=10)
+    est_customers = st.slider("👥 Expected Customers", 10, 400, 100, step=10)
 with col2:
-    items_per_cust   = st.slider("Avg Items per Customer", 1, 5, 2)
+    items_per_cust = st.slider("🛍️ Items per Customer", 1, 6, 2)
 with col3:
-    sim_item_price   = st.number_input("Item Price (₹)", min_value=10, max_value=500, value=avg_item_price, step=5)
-
-sim_revenue = est_customers * items_per_cust * sim_item_price
-sim_profit  = sim_revenue - total_cost
-be_customers = -(-total_cost // (items_per_cust * sim_item_price))
-
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Simulated Revenue",    f"₹{sim_revenue:,}")
-c2.metric("Simulated Profit",     f"₹{sim_profit:,}",  "✅ Profitable" if sim_profit > 0 else "⚠️ Loss")
-c3.metric("Break-even Customers", f"{be_customers}")
-c4.metric("Break-even Items",     f"{units_needed}")
-
-# Simulation chart — revenue & profit vs customer count
-cust_range  = list(range(10, 460, 10))
-rev_line    = [c * items_per_cust * sim_item_price for c in cust_range]
-profit_line = [r - total_cost for r in rev_line]
-
-fig_sim = go.Figure()
-fig_sim.add_trace(go.Scatter(
-    x=cust_range, y=rev_line,
-    name='Revenue', line=dict(color='#FF6B35', width=2.5),
-    fill='tonexty', fillcolor='rgba(255,107,53,0.05)'
-))
-fig_sim.add_trace(go.Scatter(
-    x=cust_range, y=profit_line,
-    name='Profit', line=dict(color='#43A047', width=2.5),
-))
-fig_sim.add_hline(y=0,           line_dash='dash', line_color='red',    line_width=1.5,
-                  annotation_text='Break-even', annotation_position='bottom right')
-fig_sim.add_vline(x=est_customers, line_dash='dot', line_color='#FF6B35', line_width=2,
-                  annotation_text=f'You: {est_customers}', annotation_position='top')
-fig_sim.update_layout(
-    title='Revenue & Profit vs Customer Count',
-    xaxis_title='Customers', yaxis_title='Amount (₹)',
-    height=360, hovermode='x unified',
-    legend=dict(orientation='h', yanchor='bottom', y=1.02),
-)
-st.plotly_chart(fig_sim, use_container_width=True)
-st.caption("Move the sliders above to see your numbers update live.")
+    item_price = st.number_input("💵 Price per Item (₹)", min_value=10, max_value=500, value=60, step=5)
+ 
+sim_revenue = est_customers * items_per_cust * item_price
+ 
+m1, m2, m3 = st.columns(3)
+m1.metric("Your Estimated Revenue", f"₹{sim_revenue:,}")
+m2.metric("Estimated Profit",       f"₹{sim_revenue - stall_price:,}", "after stall rent")
+m3.metric("People visiting market", f"{footfall:,}", "expected footfall")
+ 
+st.markdown("<br>", unsafe_allow_html=True)
+st.divider()
+ 
+# ── Break-even (simplified) ───────────────────────────────────────────────────
+st.markdown("""
+<div style="font-size:1.1rem; font-weight:800; color:#0F172A; margin-bottom:12px;">
+    🧮 How many items do you need to sell?
+</div>
+""", unsafe_allow_html=True)
+ 
+col1, col2, col3 = st.columns(3)
+with col1:
+    ingredients = st.number_input("🥘 Daily Ingredients Cost (₹)", min_value=0, value=400, step=50)
+with col2:
+    selling_price = st.number_input("🏷️ You sell each item at (₹)", min_value=1, value=60, step=5)
+with col3:
+    transport = st.number_input("🚗 Transport & Other Costs (₹)", min_value=0, value=100, step=50)
+ 
+total_cost    = stall_price + ingredients + transport
+items_needed  = -(-total_cost // selling_price)
+surplus       = rev['avg'] - total_cost
+ 
+st.markdown(f"""
+<div style="background:#F8FAFC; border-radius:18px; padding:24px; margin-top:8px;">
+    <div style="display:grid; grid-template-columns:repeat(3,1fr); gap:16px; text-align:center;">
+        <div style="background:white; border-radius:14px; padding:18px;
+                    box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <div style="font-size:0.72rem; color:#64748B; text-transform:uppercase;
+                        font-weight:700; margin-bottom:6px;">Your Total Daily Cost</div>
+            <div style="font-size:1.8rem; font-weight:900; color:#E53935;">₹{total_cost:,}</div>
+            <div style="font-size:0.75rem; color:#9CA3AF; margin-top:4px;">
+                Rent ₹{stall_price:,} + Ingredients ₹{ingredients:,} + Travel ₹{transport:,}
+            </div>
+        </div>
+        <div style="background:white; border-radius:14px; padding:18px;
+                    box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <div style="font-size:0.72rem; color:#64748B; text-transform:uppercase;
+                        font-weight:700; margin-bottom:6px;">Items You Must Sell</div>
+            <div style="font-size:1.8rem; font-weight:900; color:#FF6B35;">{items_needed}</div>
+            <div style="font-size:0.75rem; color:#9CA3AF; margin-top:4px;">
+                at ₹{selling_price}/item just to break even
+            </div>
+        </div>
+        <div style="background:white; border-radius:14px; padding:18px;
+                    box-shadow:0 2px 12px rgba(0,0,0,0.06);">
+            <div style="font-size:0.72rem; color:#64748B; text-transform:uppercase;
+                        font-weight:700; margin-bottom:6px;">Expected Surplus</div>
+            <div style="font-size:1.8rem; font-weight:900;
+                        color:{'#43A047' if surplus > 0 else '#E53935'};">
+                ₹{surplus:,}
+            </div>
+            <div style="font-size:0.75rem; color:#9CA3AF; margin-top:4px;">
+                {'above costs on a normal day' if surplus > 0 else 'shortfall on a normal day'}
+            </div>
+        </div>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+ 
+if surplus > 0:
+    st.success(f"✅ On a normal day at this market, you'd cover all costs and still pocket **₹{surplus:,}**.")
+else:
+    st.error(f"⚠️ Average earnings here may not fully cover your costs. Try a higher-footfall market — check **Best Markets** in the sidebar.")
+ 

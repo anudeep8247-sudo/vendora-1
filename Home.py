@@ -1,181 +1,210 @@
 import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from data import apply_css
+from data import apply_css, get_vendor_name, get_user_role, MARKETS
 
 st.set_page_config(
     page_title="Vendora — Smart Stall Booking",
     page_icon="🏪",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed",
 )
 apply_css()
 
-# ── Hero Banner ───────────────────────────────────────────────────────────────
-st.markdown("""
-<div style="
-    background: linear-gradient(135deg, #FF6B35 0%, #E8400C 60%, #C62828 100%);
-    border-radius: 22px;
-    padding: 52px 40px 48px;
-    text-align: center;
-    margin-bottom: 2rem;
-    box-shadow: 0 20px 60px rgba(255,107,53,0.3);
-">
-  <div style="font-size:3.8rem; font-weight:900; color:white; letter-spacing:-3px; margin-bottom:10px;">
-    🏪 VENDORA
-  </div>
-  <div style="font-size:1.1rem; color:rgba(255,255,255,0.88); max-width:580px; margin:0 auto; line-height:1.6;">
-    Smart Stall Booking &amp; Market Intelligence for Hyderabad's Food Vendors
-  </div>
-  <div style="margin-top:20px; display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-    <span style="background:rgba(255,255,255,0.18); color:white; padding:5px 16px; border-radius:20px; font-size:0.82rem; font-weight:600;">📍 Hyderabad</span>
-    <span style="background:rgba(255,255,255,0.18); color:white; padding:5px 16px; border-radius:20px; font-size:0.82rem; font-weight:600;">🏪 25,000+ Micro-Vendors</span>
-    <span style="background:rgba(255,255,255,0.18); color:white; padding:5px 16px; border-radius:20px; font-size:0.82rem; font-weight:600;">💰 Up to 4x Revenue Uplift</span>
-    <span style="background:rgba(255,255,255,0.18); color:white; padding:5px 16px; border-radius:20px; font-size:0.82rem; font-weight:600;">📊 Data-Driven Placement</span>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── Stat Cards ────────────────────────────────────────────────────────────────
-stats = [
-    ("10",    "+2 new this month",  "Active Markets"),
-    ("847",   "+23 this week",      "Registered Vendors"),
-    ("2,340", "this season",        "Stalls Booked"),
-    ("68%",   "vs unplanned vendors", "Avg Revenue Uplift"),
-]
-cols = st.columns(4)
-for col, (num, sub, label) in zip(cols, stats):
-    col.markdown(f"""
-    <div class="stat-card">
-      <div class="stat-num">{num}</div>
-      <div class="stat-sub">↑ {sub}</div>
-      <div class="stat-label">{label}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# ── Dark Stats Section ────────────────────────────────────────────────────────
-st.markdown("""
-<div style="
-    background: #0F172A;
-    border-radius: 18px;
-    padding: 36px 32px;
-    margin: 0.5rem 0 1.5rem 0;
-">
-  <div style="text-align:center; color:#64748B; font-size:0.72rem; text-transform:uppercase;
-              letter-spacing:0.15em; margin-bottom:24px; font-weight:600;">
-    THE NUMBERS BEHIND THE PROBLEM
-  </div>
-  <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:16px; text-align:center;">
-    <div>
-      <div style="font-size:2.8rem; font-weight:900; color:#FF6B35; letter-spacing:-2px;">82%</div>
-      <div style="color:#94A3B8; font-size:0.82rem; margin-top:6px; line-height:1.4;">of vendors arrive<br>4–5 AM for a spot</div>
-    </div>
-    <div>
-      <div style="font-size:2.8rem; font-weight:900; color:#FF6B35; letter-spacing:-2px;">40%</div>
-      <div style="color:#94A3B8; font-size:0.82rem; margin-top:6px; line-height:1.4;">still land in<br>low-traffic zones</div>
-    </div>
-    <div>
-      <div style="font-size:2.8rem; font-weight:900; color:#FF6B35; letter-spacing:-2px;">4x</div>
-      <div style="color:#94A3B8; font-size:0.82rem; margin-top:6px; line-height:1.4;">revenue gap between<br>best &amp; worst spots</div>
-    </div>
-    <div>
-      <div style="font-size:2.8rem; font-weight:900; color:#FF6B35; letter-spacing:-2px;">60%</div>
-      <div style="color:#94A3B8; font-size:0.82rem; margin-top:6px; line-height:1.4;">first-timers quit<br>after 2 appearances</div>
-    </div>
-  </div>
-</div>
-""", unsafe_allow_html=True)
-
-# ── Problem vs Solution ───────────────────────────────────────────────────────
-col1, col2 = st.columns(2)
-with col1:
+# LOGIN PAGE
+# ══════════════════════════════════════════════════════════════════════════════
+def show_login():
+    # Hide sidebar and collapse button on login screen
     st.markdown("""
-    <div class="problem-card">
-      <div style="font-size:1rem; font-weight:700; color:#C62828; margin-bottom:14px;">
-        😓 Before Vendora
-      </div>
-      <div style="line-height:2.1; color:#374151; font-size:0.92rem;">
-        🕓 Wake up at 4 AM just to get a <b>decent spot</b><br>
-        📍 35–40% still end up in <b>low-traffic zones</b><br>
-        📉 Poor placement = <b>40–60% lower sales</b><br>
-        🎲 No footfall data — placement is <b>pure luck</b><br>
-        💸 ₹600–900/day below <b>break-even</b> in bad spots
-      </div>
+    <style>
+    [data-testid="stSidebar"]        { display:none !important; }
+    [data-testid="stSidebarNav"]     { display:none !important; }
+    [data-testid="collapsedControl"] { display:none !important; }
+    .stApp { background: linear-gradient(135deg, #FF6B35 0%, #C62828 100%) !important; }
+    </style>
+    """, unsafe_allow_html=True)
+
+    # Center the card
+    _, mid, _ = st.columns([0.8, 2, 0.8])
+    with mid:
+        # Logo banner
+        st.markdown("""
+        <div style="text-align:center; padding:40px 0 28px;">
+            <div style="font-size:4rem; margin-bottom:6px;">🏪</div>
+            <div style="font-size:2.4rem; font-weight:900; color:white; letter-spacing:-2px;">
+                VENDORA
+            </div>
+            <div style="color:rgba(255,255,255,0.82); font-size:1rem; margin-top:4px;">
+                Smart Stall Booking for Hyderabad Vendors
+            </div>
+            <div style="margin-top:16px; display:flex; justify-content:center; gap:8px; flex-wrap:wrap;">
+                <span style="background:rgba(255,255,255,0.2); color:white; padding:4px 14px;
+                             border-radius:20px; font-size:0.8rem; font-weight:600;">📍 Hyderabad</span>
+                <span style="background:rgba(255,255,255,0.2); color:white; padding:4px 14px;
+                             border-radius:20px; font-size:0.8rem; font-weight:600;">🏪 25,000+ Vendors</span>
+                <span style="background:rgba(255,255,255,0.2); color:white; padding:4px 14px;
+                             border-radius:20px; font-size:0.8rem; font-weight:600;">💰 Up to 4x Revenue</span>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # White form card
+        st.markdown("""
+        <div style="background:white; border-radius:28px; padding:36px 32px 28px;
+                    box-shadow:0 32px 80px rgba(0,0,0,0.25);">
+            <div style="font-size:1.2rem; font-weight:800; color:#0F172A; margin-bottom:20px; text-align:center;">
+                Welcome! Tell us who you are 👋
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+
+        # Role toggle
+        st.markdown("<div style='font-weight:700; color:#374151; font-size:0.95rem; margin-bottom:4px;'>I am a…</div>", unsafe_allow_html=True)
+        role_choice = st.radio(
+            "Role", ["🛒  Vendor (food seller)", "📊  Organizer (market owner)"],
+            horizontal=True, label_visibility="collapsed"
+        )
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # Inputs
+        name  = st.text_input("Your Name or Business Name", placeholder="e.g. Raju Bakery / Priya Snacks")
+        phone = st.text_input("Phone Number", placeholder="10-digit number, e.g. 9876543210", max_chars=10)
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        login_btn = st.button("🚀  Login / Sign Up", type="primary", use_container_width=True)
+
+        if login_btn:
+            if not name.strip():
+                st.error("Please enter your name or business name.")
+            elif not phone.strip().isdigit() or len(phone.strip()) != 10:
+                st.error("Please enter a valid 10-digit phone number.")
+            else:
+                st.session_state.logged_in   = True
+                st.session_state.vendor_name = name.strip()
+                st.session_state.vendor_phone = phone.strip()
+                st.session_state.role = (
+                    'organizer' if 'Organizer' in role_choice else 'vendor'
+                )
+                st.rerun()
+
+        st.markdown("""
+        <div style="text-align:center; color:#9CA3AF; font-size:0.8rem; margin-top:16px;">
+            No password needed — just your name and phone 🎉<br>
+            New here? The same form signs you up automatically.
+        </div>
+        """, unsafe_allow_html=True)
+
+        st.markdown("<br><br>", unsafe_allow_html=True)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# DASHBOARD (after login)
+# ══════════════════════════════════════════════════════════════════════════════
+def show_dashboard():
+    vendor_name = get_vendor_name() # pyright: ignore[reportUndefinedVariable]
+    role        = get_user_role() # pyright: ignore[reportUndefinedVariable]
+
+    # Greeting banner
+    st.markdown(f"""
+    <div style="background:linear-gradient(135deg,#FF6B35 0%,#C62828 100%);
+                border-radius:22px; padding:28px 28px 24px; margin-bottom:1.4rem;
+                box-shadow:0 12px 40px rgba(255,107,53,0.3);">
+        <div style="font-size:1.7rem; font-weight:900; color:white; margin-bottom:4px;">
+            👋 Hi, {vendor_name}!
+        </div>
+        <div style="color:rgba(255,255,255,0.85); font-size:1rem;">
+            Ready to find the perfect stall today? All tools are in the sidebar 👈
+        </div>
     </div>
     """, unsafe_allow_html=True)
-with col2:
+
+    # Quick stats
+    open_markets  = int((MARKETS['Available Stalls'] > 0).sum()) # pyright: ignore[reportUndefinedVariable]
+    total_free    = int(MARKETS['Available Stalls'].sum()) # pyright: ignore[reportUndefinedVariable]
+    stats = [
+        ("🏪", str(open_markets),  "Markets with Open Stalls"),
+        ("📍", str(total_free),    "Stalls Available Now"),
+        ("💰", "68%",              "Avg Revenue Uplift"),
+        ("⭐", "4.2",              "Platform Rating"),
+    ]
+    cols = st.columns(4)
+    for col, (ico, num, label) in zip(cols, stats):
+        col.markdown(f"""
+        <div class="stat-card">
+            <div style="font-size:1.6rem; margin-bottom:4px;">{ico}</div>
+            <div class="stat-num">{num}</div>
+            <div class="stat-label">{label}</div>
+        </div>
+        """, unsafe_allow_html=True)
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    # ── Feature cards (colorful nav) ──────────────────────────────────────────
     st.markdown("""
-    <div class="solution-card">
-      <div style="font-size:1rem; font-weight:700; color:#2E7D32; margin-bottom:14px;">
-        ✅ With Vendora
-      </div>
-      <div style="line-height:2.1; color:#374151; font-size:0.92rem;">
-        📅 Book stalls <b>days in advance</b> — no early rush<br>
-        🎯 See <b>footfall scores</b> for every stall before booking<br>
-        🔥 Know <b>competitor density</b> by zone &amp; category<br>
-        💰 <b>Predict your revenue</b> before showing up<br>
-        ⭐ Build a <b>reliability score</b> for premium early access
-      </div>
+    <div style="font-size:1.1rem; font-weight:800; color:#0F172A; margin-bottom:14px;">
+        🚀 What do you want to do today?
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown("<br>", unsafe_allow_html=True)
+    features = [
+        ("🛒", "Explore Markets",      "Find markets & food events near you",    "pages/1_Market_Discovery.py", "feat-orange"),
+        ("📍", "Book a Stall",         "Pick your spot on a live stall map",     "pages/2_Stall_Map.py",         "feat-green"),
+        ("💰", "Earnings Calculator",  "How much will you earn today?",          "pages/3_Revenue_Predictor.py", "feat-blue"),
+        ("🔥", "Zone Picker",          "Which zone should you set up in?",       "pages/4_Competitor_Heatmap.py","feat-amber"),
+        ("⭐", "Best Markets",         "Most profitable markets for your food",   "pages/5_Best_Markets.py",      "feat-purple"),
+        ("🎯", "Smart Suggest",        "Get a personalised market match",        "pages/7_Smart_Suggest.py",     "feat-teal"),
+    ]
 
-# ── How it Works ──────────────────────────────────────────────────────────────
-st.markdown("""
-<div style="text-align:center; font-size:1.4rem; font-weight:800; color:#0F172A; margin-bottom:20px;">
-  How It Works
-</div>
-""", unsafe_allow_html=True)
+    row1 = st.columns(3)
+    row2 = st.columns(3)
+    all_cols = row1 + row2
 
-steps = [
-    ("🔍", "1", "Discover",  "Browse markets, food fests, and events happening across Hyderabad"),
-    ("📊", "2", "Analyse",   "Compare footfall, competitor density, and revenue potential by stall"),
-    ("📍", "3", "Book",      "Reserve your exact stall from an interactive map — paid & confirmed"),
-    ("💰", "4", "Earn More", "Show up to the right spot, track performance, grow your score"),
-]
-cols = st.columns(4)
-for col, (icon, num, title, desc) in zip(cols, steps):
-    col.markdown(f"""
-    <div class="step-card">
-      <div class="step-icon">{num}</div>
-      <div style="font-size:1.5rem; margin-bottom:6px;">{icon}</div>
-      <div style="font-weight:700; font-size:0.95rem; color:#1E293B; margin-bottom:8px;">{title}</div>
-      <div style="font-size:0.82rem; color:#64748B; line-height:1.5;">{desc}</div>
-    </div>
-    """, unsafe_allow_html=True)
+    for col, (icon, title, desc, page, cls) in zip(all_cols, features):
+        with col:
+            st.markdown(f"""
+            <div class="feat-card {cls}" style="margin-bottom:8px;">
+                <div style="font-size:2rem; margin-bottom:8px;">{icon}</div>
+                <div style="font-weight:800; font-size:0.98rem; margin-bottom:4px;">{title}</div>
+                <div style="font-size:0.78rem; opacity:0.85; line-height:1.4;">{desc}</div>
+            </div>
+            """, unsafe_allow_html=True)
+            st.page_link(page, label=f"Open →")
 
-st.markdown("<br>", unsafe_allow_html=True)
-st.divider()
+    # Organizer panel (only for organizer role)
+    if role == 'organizer':
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("""
+        <div style="background:#0F172A; border-radius:16px; padding:20px 24px; margin-bottom:12px;">
+            <div style="color:white; font-weight:800; font-size:1rem; margin-bottom:4px;">
+                📊 Organizer Tools
+            </div>
+            <div style="color:#94A3B8; font-size:0.87rem;">
+                Access your market dashboard, manage stalls, and track revenue.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        st.page_link("pages/6_Organizer_Dashboard.py", label="📊 Open Organizer Dashboard →")
 
-# ── Navigation Guide ──────────────────────────────────────────────────────────
-st.markdown("""
-<div style="font-size:1.1rem; font-weight:700; color:#0F172A; margin-bottom:14px;">
-  👈 Navigate from the sidebar
-</div>
-""", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.divider()
 
-nav = [
-    ("🛒", "Market Discovery",      "Browse and filter all markets on a live Hyderabad map"),
-    ("📍", "Stall Map & Booking",   "Visual stall grid — pick your spot by footfall score"),
-    ("💰", "Revenue Predictor",     "Estimate earnings + live simulation slider + break-even calc"),
-    ("🔥", "Competitor Heatmap",    "See zone saturation for your food category before booking"),
-    ("⭐", "Best Markets",          "Ranked recommendations with ROI, profit, and radar chart"),
-    ("🎯", "Smart Suggest",         "AI-style recommendation — fill your profile, get your best match"),
-    ("📊", "Organizer Dashboard",   "Occupancy tracking, revenue gauges, full stall allocation view"),
-]
-col1, col2 = st.columns(2)
-for i, (icon, title, desc) in enumerate(nav):
-    target = col1 if i % 2 == 0 else col2
-    target.markdown(f"""
-    <div class="nav-card">
-      <span style="font-size:1rem;">{icon}</span>
-      <strong style="color:#0F172A;"> {title}</strong>
-      <span style="color:#64748B; font-size:0.85rem;"> — {desc}</span>
-    </div>
-    """, unsafe_allow_html=True)
+    # Logout
+    col1, col2, col3 = st.columns([2, 1, 2])
+    with col2:
+        if st.button("🚪 Logout", use_container_width=True):
+            for key in ['logged_in', 'vendor_name', 'vendor_phone', 'role']:
+                st.session_state.pop(key, None)
+            st.rerun()
 
-st.markdown("<br>", unsafe_allow_html=True)
-st.caption("Vendora · BBA Innovation Project 2025 · Mahindra University, Hyderabad")
+    st.caption("Vendora · BBA Innovation Project 2025 · Mahindra University, Hyderabad")
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# ROUTER
+# ══════════════════════════════════════════════════════════════════════════════
+if not st.session_state.get('logged_in', False):
+    show_login()
+else:
+    show_dashboard()

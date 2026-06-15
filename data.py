@@ -284,3 +284,85 @@ def generate_stall_map(market_name, total_stalls=40):
             })
 
     return pd.DataFrame(stalls)
+
+
+def require_login():
+    """Call at top of every page (right after set_page_config) to gate access."""
+    if not st.session_state.get('logged_in', False):
+        apply_css()
+        st.markdown("""
+        <style>
+        [data-testid="stSidebar"]        { display:none !important; }
+        [data-testid="stSidebarNav"]     { display:none !important; }
+        [data-testid="collapsedControl"] { display:none !important; }
+        </style>
+        """, unsafe_allow_html=True)
+        st.markdown("""
+        <div style="text-align:center; padding:70px 20px 24px;">
+            <div style="font-size:4rem; margin-bottom:10px;">🔒</div>
+            <div style="font-size:1.7rem; font-weight:900; color:#0F172A; margin-bottom:8px;">
+                Please log in first
+            </div>
+            <div style="color:#64748B; font-size:1rem;">
+                You need to be logged in to use Vendora
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        col1, col2, col3 = st.columns([1, 1, 1])
+        with col2:
+            st.page_link("Home.py", label="🔑  Go to Login →")
+        st.stop()
+
+
+def get_vendor_name():
+    return st.session_state.get('vendor_name', 'Vendor')
+
+
+def get_user_role():
+    return st.session_state.get('role', 'vendor')
+
+
+def generate_stall_map(market_name, total_stalls=40):
+    seed = int(hashlib.md5(market_name.encode()).hexdigest(), 16) % (2 ** 31)
+    rng  = np.random.RandomState(seed)
+
+    zones_config = [
+        ('A - Entrance Zone', 80, 95),
+        ('B - Main Walkway',  60, 79),
+        ('C - Inner Area',    40, 59),
+        ('D - Back Area',     20, 39),
+    ]
+
+    stalls   = []
+    per_zone = max(1, total_stalls // 4)
+    cols     = 7
+
+    for zone_idx, (zone_name, fp_min, fp_max) in enumerate(zones_config):
+        rows_in_zone = max(1, (per_zone - 1) // cols + 1)
+        y_base       = zone_idx * (rows_in_zone + 2)
+
+        for i in range(per_zone):
+            r = rng.random()
+            if r < 0.58:
+                status   = 'Booked'
+                category = rng.choice(['Street Food', 'Bakery', 'Beverages', 'Homemade', 'Festival Food'])
+            elif r < 0.85:
+                status   = 'Available'
+                category = '—'
+            else:
+                status   = 'Waitlisted'
+                category = '—'
+
+            zone_prefix = zone_name[0]
+            stalls.append({
+                'Stall ID':        f'{zone_prefix}{i + 1:02d}',
+                'Zone':            zone_name,
+                'Footfall Score':  int(rng.randint(fp_min, fp_max + 1)),
+                'Status':          status,
+                'Vendor Category': category,
+                'Price (₹)':       900 if zone_prefix in ['A', 'B'] else 650,
+                'X':               i % cols,
+                'Y':               y_base + i // cols,
+            })
+
+    return pd.DataFrame(stalls)
