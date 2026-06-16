@@ -133,42 +133,84 @@ def apply_css():
         font-size: 0.9rem !important;
     }
 
-    /* ── Feature cards on Home ── */
-    .feat-card {
-        background: white !important;
-        border-radius: 16px !important;
-        padding: 24px 20px !important;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
-        border: 1px solid rgba(15,23,42,0.08) !important;
-        transition: all 0.2s ease !important;
+    /* ── Feature navigation cards on Home ── */
+    .st-key-feature_explore button,
+    .st-key-feature_book button,
+    .st-key-feature_earn button,
+    .st-key-feature_best button,
+    .st-key-feature_suggest button {
+        min-height: 210px !important;
+        width: 100% !important;
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        display: flex !important;
+        flex-direction: column !important;
+        background: #05070D !important;
+        color: white !important;
+        border: 1px solid rgba(255,255,255,0.16) !important;
+        border-top: 7px solid #FF6B35 !important;
+        border-radius: 18px !important;
+        padding: 30px 32px !important;
+        box-shadow: 0 22px 48px rgba(15,23,42,0.26), 0 0 0 1px rgba(255,255,255,0.04) inset !important;
+        text-align: left !important;
+        transition: transform 0.18s ease, box-shadow 0.18s ease, filter 0.18s ease !important;
     }
-    .feat-card:hover {
-        box-shadow: 0 8px 24px rgba(255,107,53,0.15) !important;
-        transform: translateY(-4px) !important;
+    .st-key-feature_explore button:hover,
+    .st-key-feature_book button:hover,
+    .st-key-feature_earn button:hover,
+    .st-key-feature_best button:hover,
+    .st-key-feature_suggest button:hover {
+        box-shadow: 0 32px 70px rgba(15,23,42,0.42), 0 0 0 1px rgba(255,255,255,0.12) inset !important;
+        transform: translateY(-10px) scale(1.025) !important;
+        filter: saturate(1.12) !important;
     }
-    .feat-card.feat-orange { border-top: 4px solid #FF6B35 !important; }
-    .feat-card.feat-green { border-top: 4px solid #43A047 !important; }
-    .feat-card.feat-blue { border-top: 4px solid #1E88E5 !important; }
-    .feat-card.feat-purple { border-top: 4px solid #7C3AED !important; }
-    .feat-card.feat-teal { border-top: 4px solid #0891B2 !important; }
-    .feat-card.feat-amber { border-top: 4px solid #F59E0B !important; }
+    .st-key-feature_explore button p,
+    .st-key-feature_book button p,
+    .st-key-feature_earn button p,
+    .st-key-feature_best button p,
+    .st-key-feature_suggest button p {
+        white-space: pre-line !important;
+        line-height: 1.5 !important;
+        color: rgba(255,255,255,0.82) !important;
+        font-size: 1rem !important;
+        margin: 0 !important;
+    }
+    .st-key-feature_explore button strong,
+    .st-key-feature_book button strong,
+    .st-key-feature_earn button strong,
+    .st-key-feature_best button strong,
+    .st-key-feature_suggest button strong {
+        display: block !important;
+        color: white !important;
+        font-size: 1.32rem !important;
+        margin-bottom: 8px !important;
+    }
+    .st-key-feature_explore button { background: linear-gradient(135deg,#05070D 0%,#111827 50%,#7F1D1D 100%) !important; border-top-color: #FF6B35 !important; }
+    .st-key-feature_book button { background: linear-gradient(135deg,#05070D 0%,#111827 50%,#14532D 100%) !important; border-top-color: #43A047 !important; }
+    .st-key-feature_earn button { background: linear-gradient(135deg,#05070D 0%,#111827 50%,#1E3A8A 100%) !important; border-top-color: #1E88E5 !important; }
+    .st-key-feature_best button { background: linear-gradient(135deg,#05070D 0%,#111827 50%,#581C87 100%) !important; border-top-color: #7C3AED !important; }
+    .st-key-feature_suggest button { background: linear-gradient(135deg,#05070D 0%,#111827 50%,#164E63 100%) !important; border-top-color: #0891B2 !important; }
 
     /* ── Page link buttons styling ── */
     [data-testid="stPageLinkButton"] {
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
         font-size: 0.95rem !important;
         font-weight: 700 !important;
-        padding: 12px 18px !important;
-        border-radius: 10px !important;
-        background: linear-gradient(135deg, #FF6B35, #FF8C61) !important;
+        padding: 20px 22px !important;
+        border-radius: 14px !important;
+        background: #111827 !important;
         color: white !important;
-        border: none !important;
-        box-shadow: 0 4px 14px rgba(255,107,53,0.3) !important;
+        border: 1px solid rgba(255,255,255,0.14) !important;
+        border-top: 5px solid #FF6B35 !important;
+        box-shadow: 0 14px 32px rgba(15,23,42,0.16) !important;
+        text-align: left !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
     }
     [data-testid="stPageLinkButton"]:hover {
-        box-shadow: 0 6px 20px rgba(255,107,53,0.4) !important;
-        transform: translateY(-2px) !important;
+        box-shadow: 0 22px 46px rgba(15,23,42,0.24) !important;
+        transform: translateY(-6px) !important;
     }
 
     /* ── Zone cards and recommendation wrappers ── */

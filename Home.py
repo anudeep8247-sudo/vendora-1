@@ -73,7 +73,7 @@ def show_login():
 
         st.markdown("<br>", unsafe_allow_html=True)
 
-        login_btn = st.button("🚀  Login / Sign Up", type="primary", use_container_width=True)
+        login_btn = st.button("🚀  Login / Sign Up", type="primary", width="stretch")
 
         if login_btn:
             if not name.strip():
@@ -143,33 +143,32 @@ def show_dashboard():
 
     # ── Feature cards (colorful nav) ──────────────────────────────────────────
     st.markdown("""
-    <div style="font-size:1.1rem; font-weight:800; color:#0F172A; margin-bottom:14px;">
+    <div style="font-size:1.35rem; font-weight:900; color:#0F172A; margin-bottom:18px;">
         🚀 What do you want to do today?
     </div>
     """, unsafe_allow_html=True)
 
     features = [
-        ("🛒", "Explore Markets",      "Find markets & food events near you",    "pages/1_Market_Discovery.py", "feat-orange"),
-        ("📍", "Book a Stall",         "Pick your spot on a live stall map",     "pages/2_Stall_Map.py",         "feat-green"),
-        ("💰", "Earnings Calculator",  "How much will you earn today?",          "pages/3_Revenue_Predictor.py", "feat-blue"),
-        ("⭐", "Best Markets",         "Most profitable markets for your food",   "pages/5_Best_Markets.py",      "feat-purple"),
-        ("🎯", "Smart Suggest",        "Get a personalised market match",        "pages/7_Smart_Suggest.py",     "feat-teal"),
+        ("explore", "🛒", "Explore Markets",      "Find markets & food events near you",    "pages/1_Market_Discovery.py"),
+        ("book",    "📍", "Book a Stall",         "Pick your spot on a live stall map",     "pages/2_Stall_Map.py"),
+        ("earn",    "💰", "Earnings Calculator",  "How much will you earn today?",          "pages/3_Revenue_Predictor.py"),
+        ("best",    "⭐", "Best Markets",         "Most profitable markets for your food",   "pages/5_Best_Markets.py"),
+        ("suggest", "🎯", "Smart Suggest",        "Get a personalised market match",        "pages/7_Smart_Suggest.py"),
     ]
 
     row1 = st.columns(3)
     row2 = st.columns(3)
     all_cols = row1 + row2
 
-    for col, (icon, title, desc, page, cls) in zip(all_cols, features):
+    for col, (slug, icon, title, desc, page) in zip(all_cols, features):
         with col:
-            st.markdown(f"""
-            <div class="feat-card {cls}" style="margin-bottom:8px;">
-                <div style="font-size:2rem; margin-bottom:8px;">{icon}</div>
-                <div style="font-weight:800; font-size:0.98rem; margin-bottom:4px;">{title}</div>
-                <div style="font-size:0.78rem; opacity:0.85; line-height:1.4;">{desc}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            st.page_link(page, label=f"Open {title} →", icon=":material:open_in_new:", icon_position="right", width="stretch")
+            with st.container(key=f"feature_{slug}"):
+                if st.button(
+                    f"{icon}\n\n**{title}**\n\n{desc}",
+                    key=f"feature_btn_{slug}",
+                    width="stretch",
+                ):
+                    st.switch_page(page)
 
     # Organizer panel (only for organizer role)
     if role == 'organizer':
@@ -192,7 +191,7 @@ def show_dashboard():
     # Logout
     col1, col2, col3 = st.columns([2, 1, 2])
     with col2:
-        if st.button("🚪 Logout", use_container_width=True):
+        if st.button("🚪 Logout", width="stretch"):
             for key in ['logged_in', 'vendor_name', 'vendor_phone', 'role']:
                 st.session_state.pop(key, None)
             st.rerun()

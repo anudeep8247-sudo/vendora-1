@@ -99,7 +99,7 @@ with col4:
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-find = st.button("🎯 Find My Best Match", type="primary", use_container_width=True)
+find = st.button("🎯 Find My Best Match", type="primary", width="stretch")
 
 if find:
     with st.spinner("Analysing 10 markets across 5 dimensions..."):
@@ -233,7 +233,7 @@ if find:
             margin=dict(t=20, b=20, l=20, r=20),
             legend=dict(font=dict(size=9)),
         )
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width="stretch")
 
         # Comparison bar
         if len(recs) >= 2:
@@ -256,6 +256,6 @@ if find:
                 yaxis=dict(title=''),
                 showlegend=False,
             )
-            st.plotly_chart(fig2, use_container_width=True)
+            st.plotly_chart(fig2, width="stretch")
 
     st.info("👈 Go to **Stall Map & Booking** in the sidebar to reserve a stall at your top pick.")

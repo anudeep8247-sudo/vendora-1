@@ -88,7 +88,7 @@ fig.update_layout(
     plot_bgcolor='#f8f9fa',
     legend_title_text='Status',
 )
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # Zone labels on the side
 for zone, (label, _) in zone_labels.items():
@@ -139,7 +139,7 @@ else:
 
         st.caption(f"Zone: {info['Zone']}  |  Price: ₹{info['Price (₹)']}  |  Score: {sc}/100")
 
-        if st.button("✅ Confirm Booking", type="primary", use_container_width=True):
+        if st.button("✅ Confirm Booking", type="primary", width="stretch"):
             if vendor_name and phone:
                 add_booking(
                     market_name=market_name,
@@ -183,7 +183,7 @@ if current_vendor and vendor_bookings:
                 f"Booked on {booking['timestamp'].split('T')[0]}"
             )
         with col2:
-            if st.button(f"Cancel {stall_id}", key=f"cancel_{stall_id}", use_container_width=True):
+            if st.button(f"Cancel {stall_id}", key=f"cancel_{stall_id}", width="stretch"):
                 cancelled = cancel_booking(market_name, stall_id)
                 if cancelled:
                     adjust_vendor_reliability(current_vendor, -5)

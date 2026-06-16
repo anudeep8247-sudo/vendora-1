@@ -36,7 +36,7 @@ st.markdown(f"**{len(df)} market(s) found**")
 if len(df) == 0:
     st.warning("No markets match your filters. Try adjusting the selections.")
 else:
-    fig = px.scatter_mapbox(
+    fig = px.scatter_map(
         df, lat='Lat', lon='Lon',
         hover_name='Market Name',
         hover_data={
@@ -49,10 +49,10 @@ else:
         size_max=28,
         color_continuous_scale='YlOrRd',
         zoom=11, height=440,
-        mapbox_style='carto-positron',
+        map_style='carto-positron',
     )
     fig.update_layout(margin=dict(l=0, r=0, t=0, b=0), coloraxis_colorbar_title="Footfall")
-    st.plotly_chart(fig, use_container_width=True)
+    st.plotly_chart(fig, width="stretch")
 
     st.divider()
 

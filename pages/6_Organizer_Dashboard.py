@@ -74,7 +74,7 @@ with col1:
         height=360,
         labels={'Zone Short': 'Zone', 'Count': 'Stalls'},
     )
-    st.plotly_chart(fig1, use_container_width=True)
+    st.plotly_chart(fig1, width="stretch")
 
 with col2:
     # Vendor category pie
@@ -88,7 +88,7 @@ with col2:
         height=360,
     )
     fig2.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig2, use_container_width=True)
+    st.plotly_chart(fig2, width="stretch")
 
 st.divider()
 
@@ -114,7 +114,7 @@ fig3 = go.Figure(go.Indicator(
     }
 ))
 fig3.update_layout(height=300, margin=dict(t=60, b=10))
-st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig3, width="stretch")
 
 unrealised = max_rev - current_rev
 st.caption(
@@ -145,13 +145,13 @@ fig4 = px.bar(
 )
 fig4.update_traces(texttemplate='%{text:.0f}', textposition='outside')
 fig4.update_layout(coloraxis_showscale=False)
-st.plotly_chart(fig4, use_container_width=True)
+st.plotly_chart(fig4, width="stretch")
 
 st.divider()
 
 # ── Registered vendor list ────────────────────────────────────────────────────
 st.subheader("Registered Vendors on Platform")
-st.dataframe(VENDORS, use_container_width=True, hide_index=True)
+st.dataframe(VENDORS, width="stretch", hide_index=True)
 
 st.divider()
 
@@ -165,4 +165,4 @@ status_filter = st.multiselect(
 display_df = stalls_df[stalls_df['Status'].isin(status_filter)][
     ['Stall ID', 'Zone', 'Footfall Score', 'Status', 'Vendor Category', 'Price (₹)']
 ]
-st.dataframe(display_df, use_container_width=True, hide_index=True)
+st.dataframe(display_df, width="stretch", hide_index=True)

@@ -69,7 +69,7 @@ fig = px.bar(
 )
 fig.update_traces(texttemplate='₹%{text:,}', textposition='outside')
 fig.update_layout(xaxis_tickangle=-30, uniformtext_minsize=8, uniformtext_mode='hide')
-st.plotly_chart(fig, use_container_width=True)
+st.plotly_chart(fig, width="stretch")
 
 # ── Scatter: Footfall vs Profit ───────────────────────────────────────────────
 fig2 = px.scatter(
@@ -86,7 +86,7 @@ fig2 = px.scatter(
     height=400,
 )
 fig2.add_hline(y=0, line_dash='dash', line_color='red', annotation_text='Break-even line')
-st.plotly_chart(fig2, use_container_width=True)
+st.plotly_chart(fig2, width="stretch")
 
 st.divider()
 
@@ -97,7 +97,7 @@ display_cols = [
     'Stall Fee (₹)', 'Avg Revenue (₹)', 'Avg Profit (₹)',
     'Worst Profit (₹)', 'ROI (%)', 'Footfall', 'Available Stalls', 'Rating'
 ]
-st.dataframe(rec_df[display_cols], use_container_width=True, hide_index=True)
+st.dataframe(rec_df[display_cols], width="stretch", hide_index=True)
 
 st.divider()
 
@@ -118,4 +118,4 @@ fig3.update_layout(
     yaxis_title='Revenue (₹)',
     legend=dict(orientation='h', yanchor='bottom', y=1.02)
 )
-st.plotly_chart(fig3, use_container_width=True)
+st.plotly_chart(fig3, width="stretch")
