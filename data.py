@@ -133,6 +133,44 @@ def apply_css():
         font-size: 0.9rem !important;
     }
 
+    /* ── Feature cards on Home ── */
+    .feat-card {
+        background: white !important;
+        border-radius: 16px !important;
+        padding: 24px 20px !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.06) !important;
+        border: 1px solid rgba(15,23,42,0.08) !important;
+        transition: all 0.2s ease !important;
+    }
+    .feat-card:hover {
+        box-shadow: 0 8px 24px rgba(255,107,53,0.15) !important;
+        transform: translateY(-4px) !important;
+    }
+    .feat-card.feat-orange { border-top: 4px solid #FF6B35 !important; }
+    .feat-card.feat-green { border-top: 4px solid #43A047 !important; }
+    .feat-card.feat-blue { border-top: 4px solid #1E88E5 !important; }
+    .feat-card.feat-purple { border-top: 4px solid #7C3AED !important; }
+    .feat-card.feat-teal { border-top: 4px solid #0891B2 !important; }
+    .feat-card.feat-amber { border-top: 4px solid #F59E0B !important; }
+
+    /* ── Page link buttons styling ── */
+    [data-testid="stPageLinkButton"] {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        padding: 12px 18px !important;
+        border-radius: 10px !important;
+        background: linear-gradient(135deg, #FF6B35, #FF8C61) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 14px rgba(255,107,53,0.3) !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stPageLinkButton"]:hover {
+        box-shadow: 0 6px 20px rgba(255,107,53,0.4) !important;
+        transform: translateY(-2px) !important;
+    }
+
     /* ── Zone cards and recommendation wrappers ── */
     .zone-card {
         background: white !important;

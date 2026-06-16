@@ -4,14 +4,15 @@ import sys, os
 from datetime import datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from data import (
-    MARKETS, CATEGORIES, generate_stall_map, apply_css,
+    MARKETS, CATEGORIES, generate_stall_map, apply_css, require_login,
     get_market_bookings, add_booking, cancel_booking,
     get_waitlist_for_market_zone, promote_waitlist_entry,
     get_vendor_reliability, adjust_vendor_reliability,
 )
 
 st.set_page_config(page_title="Stall Map — Vendora", page_icon="📍", layout="wide")
-apply_css()  # FIX: was missing — sidebar was white on this page
+apply_css()
+require_login()
 st.title("📍 Stall Map & Booking")
 st.caption("See the full stall layout and book your spot based on footfall scores")
 
@@ -159,7 +160,7 @@ else:
                     "Late cancellations reduce your Reliability Score."
                 )
                 st.balloons()
-                st.experimental_rerun()
+                st.rerun()
             else:
                 st.error("Please fill in your name and phone number to confirm.")
 
@@ -196,6 +197,6 @@ if current_vendor and vendor_bookings:
                             )
                     else:
                         st.success(f"Booking {stall_id} cancelled and the stall is now available again.")
-                    st.experimental_rerun()
+                    st.rerun()
 else:
     st.info("You have no active bookings in this market right now.")

@@ -152,7 +152,6 @@ def show_dashboard():
         ("🛒", "Explore Markets",      "Find markets & food events near you",    "pages/1_Market_Discovery.py", "feat-orange"),
         ("📍", "Book a Stall",         "Pick your spot on a live stall map",     "pages/2_Stall_Map.py",         "feat-green"),
         ("💰", "Earnings Calculator",  "How much will you earn today?",          "pages/3_Revenue_Predictor.py", "feat-blue"),
-        ("🔥", "Zone Picker",          "Which zone should you set up in?",       "pages/4_Competitor_Heatmap.py","feat-amber"),
         ("⭐", "Best Markets",         "Most profitable markets for your food",   "pages/5_Best_Markets.py",      "feat-purple"),
         ("🎯", "Smart Suggest",        "Get a personalised market match",        "pages/7_Smart_Suggest.py",     "feat-teal"),
     ]
@@ -170,7 +169,7 @@ def show_dashboard():
                 <div style="font-size:0.78rem; opacity:0.85; line-height:1.4;">{desc}</div>
             </div>
             """, unsafe_allow_html=True)
-            st.page_link(page, label=f"Open →")
+            st.page_link(page, label=f"Open {title} →", icon=":material:open_in_new:", icon_position="right", width="stretch")
 
     # Organizer panel (only for organizer role)
     if role == 'organizer':
