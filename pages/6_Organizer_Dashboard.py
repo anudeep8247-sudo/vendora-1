@@ -3,7 +3,10 @@ import plotly.express as px
 import plotly.graph_objects as go
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, VENDORS, generate_stall_map, apply_css  # FIX: added apply_css
+from data import (
+    MARKETS, VENDORS, generate_stall_map, apply_css,
+    get_market_bookings,
+)
 
 st.set_page_config(page_title="Organizer Dashboard — Vendora", page_icon="📊", layout="wide")
 apply_css()  # FIX: was missing — sidebar was white on this page
@@ -14,6 +17,20 @@ st.caption("Manage occupancy, track revenue, and monitor vendor allocation for y
 market     = st.selectbox("Select Your Market", MARKETS['Market Name'].tolist())
 market_row = MARKETS[MARKETS['Market Name'] == market].iloc[0]
 stalls_df  = generate_stall_map(market, total_stalls=int(market_row['Total Stalls']))
+market_bookings = get_market_bookings(market)
+
+# Apply session booking store to the generated layout so dashboard metrics match real actions.
+for stall_id, booking in market_bookings.items():
+    if stall_id in stalls_df['Stall ID'].values:
+        if booking['status'] == 'Booked':
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Status'] = 'Booked'
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Vendor Category'] = booking['category']
+        elif booking['status'] == 'Cancelled':
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Status'] = 'Available'
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Vendor Category'] = '—'
+        elif booking['status'] == 'Waitlisted':
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Status'] = 'Waitlisted'
+            stalls_df.loc[stalls_df['Stall ID'] == stall_id, 'Vendor Category'] = booking['category']
 
 total      = len(stalls_df)
 booked     = int((stalls_df['Status'] == 'Booked').sum())

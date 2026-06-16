@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import hashlib
 import streamlit as st # pyright: ignore[reportMissingImports]
+from datetime import datetime
 
 # ── Shared CSS applied across all pages ───────────────────────────────────────
 def apply_css():
@@ -27,9 +28,9 @@ def apply_css():
     }
     [data-testid="stSidebarNav"] a {
         color: #94A3B8 !important;
-        border-radius: 8px;
+        border-radius: 8px !important;
         padding: 6px 10px !important;
-        font-size: 0.88rem;
+        font-size: 0.88rem !important;
     }
     [data-testid="stSidebarNav"] a:hover {
         background: rgba(255,107,53,0.15) !important;
@@ -38,8 +39,8 @@ def apply_css():
     [data-testid="stSidebarNav"] a[aria-selected="true"] {
         background: rgba(255,107,53,0.2) !important;
         color: #FF6B35 !important;
-        font-weight: 700;
-        border-left: 3px solid #FF6B35;
+        font-weight: 700 !important;
+        border-left: 3px solid #FF6B35 !important;
     }
 
     /* ── Main layout ── */
@@ -52,84 +53,137 @@ def apply_css():
 
     /* ── Stat cards ── */
     .stat-card {
-        background: white;
-        border-radius: 16px;
-        padding: 22px 16px;
-        text-align: center;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 20px rgba(0,0,0,0.07);
-        border-top: 4px solid #FF6B35;
+        background: white !important;
+        border-radius: 16px !important;
+        padding: 22px 16px !important;
+        text-align: center !important;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.06) !important, 0 4px 20px rgba(0,0,0,0.07) !important;
+        border-top: 4px solid #FF6B35 !important;
     }
-    .stat-num   { font-size: 2.4rem; font-weight: 900; color: #FF6B35; letter-spacing: -1px; line-height: 1.1; }
-    .stat-sub   { font-size: 0.72rem; color: #43A047; font-weight: 600; margin-top: 4px; }
-    .stat-label { font-size: 0.73rem; color: #9CA3AF; text-transform: uppercase; letter-spacing: 0.08em; margin-top: 6px; }
+    .stat-num   { font-size: 2.4rem !important; font-weight: 900 !important; color: #FF6B35 !important; letter-spacing: -1px !important; line-height: 1.1 !important; }
+    .stat-sub   { font-size: 0.72rem !important; color: #43A047 !important; font-weight: 600 !important; margin-top: 4px !important; }
+    .stat-label { font-size: 0.73rem !important; color: #9CA3AF !important; text-transform: uppercase !important; letter-spacing: 0.08em !important; margin-top: 6px !important; }
 
     /* ── Problem / Solution cards ── */
     .problem-card {
-        background: #FFF5F0;
-        border: 1.5px solid #FF6B35;
-        border-radius: 16px;
-        padding: 28px 26px;
-        height: 100%;
+        background: #FFF5F0 !important;
+        border: 1.5px solid #FF6B35 !important;
+        border-radius: 16px !important;
+        padding: 28px 26px !important;
+        height: 100% !important;
     }
     .solution-card {
-        background: #F0FFF4;
-        border: 1.5px solid #43A047;
-        border-radius: 16px;
-        padding: 28px 26px;
-        height: 100%;
+        background: #F0FFF4 !important;
+        border: 1.5px solid #43A047 !important;
+        border-radius: 16px !important;
+        padding: 28px 26px !important;
+        height: 100% !important;
     }
 
     /* ── Step cards ── */
     .step-card {
-        background: white;
-        border-radius: 14px;
-        padding: 22px 18px;
-        text-align: center;
-        box-shadow: 0 2px 16px rgba(0,0,0,0.06);
-        border-bottom: 3px solid #FF6B35;
-        height: 100%;
+        background: white !important;
+        border-radius: 14px !important;
+        padding: 22px 18px !important;
+        text-align: center !important;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06) !important;
+        border-bottom: 3px solid #FF6B35 !important;
+        height: 100% !important;
     }
     .step-icon {
-        width: 46px; height: 46px;
-        background: linear-gradient(135deg, #FF6B35, #FF8C61);
-        border-radius: 50%;
-        display: flex; align-items: center; justify-content: center;
-        margin: 0 auto 12px;
-        font-size: 1.3rem;
-        color: white;
-        font-weight: 800;
-        box-shadow: 0 4px 12px rgba(255,107,53,0.35);
+        width: 46px !important; height: 46px !important;
+        background: linear-gradient(135deg, #FF6B35, #FF8C61) !important;
+        border-radius: 50% !important;
+        display: flex !important; align-items: center !important; justify-content: center !important;
+        margin: 0 auto 12px !important;
+        font-size: 1.3rem !important;
+        color: white !important;
+        font-weight: 800 !important;
+        box-shadow: 0 4px 12px rgba(255,107,53,0.35) !important;
     }
 
     /* ── Recommendation cards ── */
-    .rec-gold  { background: linear-gradient(135deg,#FFFDE7,#FFF9C4); border: 2px solid #F9A825; border-radius: 16px; padding: 24px; margin-bottom: 14px; }
-    .rec-green { background: linear-gradient(135deg,#E8F5E9,#F1F8E9); border: 2px solid #43A047; border-radius: 16px; padding: 24px; margin-bottom: 14px; }
-    .rec-blue  { background: linear-gradient(135deg,#E3F2FD,#EDE7F6); border: 2px solid #1E88E5; border-radius: 16px; padding: 24px; margin-bottom: 14px; }
+    .rec-gold  { background: linear-gradient(135deg,#FFFDE7,#FFF9C4) !important; border: 2px solid #F9A825 !important; border-radius: 16px !important; padding: 24px !important; margin-bottom: 14px !important; }
+    .rec-green { background: linear-gradient(135deg,#E8F5E9,#F1F8E9) !important; border: 2px solid #43A047 !important; border-radius: 16px !important; padding: 24px !important; margin-bottom: 14px !important; }
+    .rec-blue  { background: linear-gradient(135deg,#E3F2FD,#EDE7F6) !important; border: 2px solid #1E88E5 !important; border-radius: 16px !important; padding: 24px !important; margin-bottom: 14px !important; }
 
     /* ── Tags ── */
     .tag {
-        display: inline-block;
-        padding: 3px 11px;
-        border-radius: 20px;
-        font-size: 0.73rem;
-        font-weight: 600;
-        margin-right: 5px;
-        margin-bottom: 4px;
+        display: inline-block !important;
+        padding: 3px 11px !important;
+        border-radius: 20px !important;
+        font-size: 0.73rem !important;
+        font-weight: 600 !important;
+        margin-right: 5px !important;
+        margin-bottom: 4px !important;
     }
-    .tag-orange { background:#FFF3E0; color:#E65100; }
-    .tag-green  { background:#E8F5E9; color:#2E7D32; }
-    .tag-blue   { background:#E3F2FD; color:#1565C0; }
-    .tag-gray   { background:#F1F5F9; color:#475569; }
+    .tag-orange { background:#FFF3E0 !important; color:#E65100 !important; }
+    .tag-green  { background:#E8F5E9 !important; color:#2E7D32 !important; }
+    .tag-blue   { background:#E3F2FD !important; color:#1565C0 !important; }
+    .tag-gray   { background:#F1F5F9 !important; color:#475569 !important; }
 
     /* ── Nav cards on Home ── */
     .nav-card {
-        background: white;
-        border-radius: 12px;
-        padding: 18px 16px;
-        border-left: 4px solid #FF6B35;
-        box-shadow: 0 2px 12px rgba(0,0,0,0.05);
-        margin-bottom: 10px;
-        font-size: 0.9rem;
+        background: white !important;
+        border-radius: 12px !important;
+        padding: 18px 16px !important;
+        border-left: 4px solid #FF6B35 !important;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.05) !important;
+        margin-bottom: 10px !important;
+        font-size: 0.9rem !important;
+    }
+
+    /* ── Zone cards and recommendation wrappers ── */
+    .zone-card {
+        background: white !important;
+        border-radius: 16px !important;
+        padding: 22px 22px 18px !important;
+        border: 1px solid #E2E8F0 !important;
+        box-shadow: 0 1px 4px rgba(0,0,0,0.06) !important;
+        min-height: 180px !important;
+    }
+    .zone-best { border-color: #2E7D32 !important; }
+    .zone-good { border-color: #1565C0 !important; }
+    .zone-okay { border-color: #E65100 !important; }
+    .zone-avoid { border-color: #C62828 !important; }
+
+    .earn-main {
+        background: white !important;
+        border-radius: 18px !important;
+        padding: 24px !important;
+        box-shadow: 0 2px 18px rgba(0,0,0,0.07) !important;
+        border: 1px solid rgba(15,23,42,0.08) !important;
+    }
+    .sc-bad, .sc-normal, .sc-great {
+        background: white !important;
+        border-radius: 18px !important;
+        padding: 18px !important;
+        box-shadow: 0 2px 16px rgba(0,0,0,0.06) !important;
+        border: 1px solid rgba(15,23,42,0.08) !important;
+    }
+
+    @media only screen and (max-width: 600px) {
+        .block-container {
+            padding-left: 1rem !important;
+            padding-right: 1rem !important;
+        }
+        .stat-card, .problem-card, .solution-card, .step-card,
+        .rec-gold, .rec-green, .rec-blue, .nav-card,
+        .zone-card, .earn-main, .sc-bad, .sc-normal, .sc-great {
+            width: 100% !important;
+            min-width: auto !important;
+            box-sizing: border-box !important;
+        }
+        .zone-card {
+            padding: 18px !important;
+        }
+        .sc-bad, .sc-normal, .sc-great {
+            margin-bottom: 14px !important;
+        }
+        .stPlotlyChart, .stChart, figure {
+            max-width: 100% !important;
+            overflow-x: hidden !important;
+        }
     }
     </style>
     """, unsafe_allow_html=True)
@@ -314,9 +368,115 @@ def require_login():
         st.stop()
 
 
+def _init_booking_store():
+    if 'booking_store' not in st.session_state:
+        st.session_state['booking_store'] = {}
+        # In a real production app, this would be backed by a database
+        # such as SQLite or Postgres. This demo stores bookings only within
+        # the browser session and resets on app restart.
+
+
+def _init_reliability_scores():
+    if 'reliability_scores' not in st.session_state:
+        st.session_state['reliability_scores'] = {
+            row['Vendor Name']: int(row['Reliability Score'])
+            for _, row in VENDORS.iterrows()
+        }
+
+
 def get_vendor_name():
     return st.session_state.get('vendor_name', 'Vendor')
 
 
 def get_user_role():
     return st.session_state.get('role', 'vendor')
+
+
+def get_vendor_reliability(vendor_name: str):
+    _init_reliability_scores()
+    return st.session_state['reliability_scores'].get(vendor_name, 80)
+
+
+def adjust_vendor_reliability(vendor_name: str, delta: int):
+    _init_reliability_scores()
+    current = st.session_state['reliability_scores'].get(vendor_name, 80)
+    updated = max(0, min(100, current + delta))
+    st.session_state['reliability_scores'][vendor_name] = updated
+    return updated
+
+
+def get_booking_store():
+    _init_booking_store()
+    return st.session_state['booking_store']
+
+
+def get_market_bookings(market_name: str):
+    store = get_booking_store()
+    return store.setdefault(market_name, {})
+
+
+def get_bookings_for_vendor(vendor_name: str):
+    active = []
+    for market, stalls in get_booking_store().items():
+        for stall_id, booking in stalls.items():
+            if booking['vendor_name'] == vendor_name:
+                active.append((market, stall_id, booking))
+    return active
+
+
+def add_booking(market_name: str, stall_id: str, vendor_name: str, phone: str, category: str, zone: str, price: int):
+    market = get_market_bookings(market_name)
+    market[stall_id] = {
+        'vendor_name': vendor_name,
+        'phone': phone,
+        'category': category,
+        'zone': zone,
+        'price': price,
+        'status': 'Booked',
+        'timestamp': datetime.now().isoformat(),
+    }
+
+
+def add_waitlist_entry(market_name: str, vendor_name: str, phone: str, category: str, zone: str):
+    market = get_market_bookings(market_name)
+    zone_key = zone[0] if zone else 'X'
+    existing = [key for key in market.keys() if key.startswith(f"WL-{zone_key}-")]
+    stall_id = f"WL-{zone_key}-{len(existing) + 1:02d}"
+    market[stall_id] = {
+        'vendor_name': vendor_name,
+        'phone': phone,
+        'category': category,
+        'zone': zone,
+        'price': 0,
+        'status': 'Waitlisted',
+        'timestamp': datetime.now().isoformat(),
+    }
+    return stall_id
+
+
+def cancel_booking(market_name: str, stall_id: str):
+    market = get_market_bookings(market_name)
+    if stall_id in market:
+        market[stall_id]['status'] = 'Cancelled'
+        market[stall_id]['timestamp'] = datetime.now().isoformat()
+        return market[stall_id]
+    return None
+
+
+def get_waitlist_for_market_zone(market_name: str, zone: str):
+    waitlisted = []
+    for stall_id, booking in get_market_bookings(market_name).items():
+        if booking['status'] == 'Waitlisted' and booking['zone'] == zone:
+            waitlisted.append((stall_id, booking))
+    waitlisted.sort(key=lambda item: item[1]['timestamp'])
+    return waitlisted
+
+
+def promote_waitlist_entry(market_name: str, stall_id: str, waitlist_stall_id: str):
+    market = get_market_bookings(market_name)
+    if waitlist_stall_id in market and market[waitlist_stall_id]['status'] == 'Waitlisted':
+        market[stall_id] = market.pop(waitlist_stall_id)
+        market[stall_id]['status'] = 'Booked'
+        market[stall_id]['timestamp'] = datetime.now().isoformat()
+        return market[stall_id]
+    return None
