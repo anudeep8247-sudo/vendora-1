@@ -2,11 +2,12 @@ import streamlit as st
 import plotly.express as px
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, apply_css, require_login  # FIX: added apply_css
+from data import MARKETS, apply_css, require_login, show_back_button  # FIX: added apply_css
 
 st.set_page_config(page_title="Market Discovery — Vendora", page_icon="🛒", layout="wide")
 apply_css()  # FIX: was missing — sidebar was white on this page
 require_login()
+show_back_button()
 st.title("🛒 Market Discovery")
 st.caption("Find upcoming markets, exhibitions, and food events across Hyderabad")
 

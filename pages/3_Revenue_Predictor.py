@@ -1,11 +1,12 @@
 import streamlit as st
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css, require_login
+from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css, require_login, show_back_button
  
 st.set_page_config(page_title="Earnings Calculator — Vendora", page_icon="💰", layout="wide")
 apply_css()
 require_login()
+show_back_button()
  
 st.markdown("""
 <div style="margin-bottom:6px;">

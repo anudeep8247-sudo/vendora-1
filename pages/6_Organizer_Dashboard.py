@@ -4,7 +4,7 @@ import plotly.graph_objects as go
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from data import (
-    MARKETS, VENDORS, generate_stall_map, apply_css, require_login, get_user_role,
+    MARKETS, VENDORS, generate_stall_map, apply_css, require_login, show_back_button, get_user_role,
     get_market_bookings,
 )
 
@@ -16,6 +16,7 @@ if get_user_role() != 'organizer':
     st.page_link("Home.py", label="← Back to Home")
     st.stop()
 
+show_back_button()
 st.title("📊 Organizer Dashboard")
 st.caption("Manage occupancy, track revenue, and monitor vendor allocation for your market")
 

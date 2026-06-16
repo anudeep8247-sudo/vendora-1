@@ -4,7 +4,7 @@ import sys, os
 from datetime import datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from data import (
-    MARKETS, CATEGORIES, generate_stall_map, apply_css, require_login,
+    MARKETS, CATEGORIES, generate_stall_map, apply_css, require_login, show_back_button,
     get_market_bookings, add_booking, cancel_booking,
     get_waitlist_for_market_zone, promote_waitlist_entry,
     get_vendor_reliability, adjust_vendor_reliability,
@@ -13,6 +13,7 @@ from data import (
 st.set_page_config(page_title="Stall Map — Vendora", page_icon="📍", layout="wide")
 apply_css()
 require_login()
+show_back_button()
 st.title("📍 Stall Map & Booking")
 st.caption("See the full stall layout and book your spot based on footfall scores")
 

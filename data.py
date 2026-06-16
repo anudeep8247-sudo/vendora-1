@@ -448,6 +448,14 @@ def require_login():
         st.stop()
 
 
+def show_back_button(label="← Back to Home"):
+    """Render a consistent back button on feature pages."""
+    left, _, _ = st.columns([1.2, 4, 1])
+    with left:
+        st.page_link("Home.py", label=label)
+    st.markdown("<div style='height:0.35rem;'></div>", unsafe_allow_html=True)
+
+
 def _init_booking_store():
     if 'booking_store' not in st.session_state:
         st.session_state['booking_store'] = {}
