@@ -87,15 +87,18 @@ with col2:
     # Vendor category pie
     booked_df  = stalls_df[stalls_df['Status'] == 'Booked']
     cat_counts = booked_df['Vendor Category'].value_counts().reset_index()
-    cat_counts.columns = ['Category', 'Count']
-    fig2 = px.pie(
-        cat_counts, names='Category', values='Count',
-        title='Booked Vendors by Food Category',
-        color_discrete_sequence=px.colors.qualitative.Bold,
-        height=360,
-    )
-    fig2.update_traces(textposition='inside', textinfo='percent+label')
-    st.plotly_chart(fig2, width="stretch")
+    if cat_counts.empty:
+        st.info("No booked vendors yet, so the category chart will appear after the first booking.")
+    else:
+        cat_counts.columns = ['Category', 'Count']
+        fig2 = px.pie(
+            cat_counts, names='Category', values='Count',
+            title='Booked Vendors by Food Category',
+            color_discrete_sequence=px.colors.qualitative.Bold,
+            height=360,
+        )
+        fig2.update_traces(textposition='inside', textinfo='percent+label')
+        st.plotly_chart(fig2, width="stretch")
 
 st.divider()
 

@@ -1,4 +1,5 @@
 import streamlit as st
+from html import escape
 import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from data import apply_css, get_vendor_name, get_user_role, MARKETS
@@ -104,6 +105,7 @@ def show_login():
 # ══════════════════════════════════════════════════════════════════════════════
 def show_dashboard():
     vendor_name = get_vendor_name() # pyright: ignore[reportUndefinedVariable]
+    display_name = escape(vendor_name)
     role        = get_user_role() # pyright: ignore[reportUndefinedVariable]
 
     # Greeting banner
@@ -112,7 +114,7 @@ def show_dashboard():
                 border-radius:22px; padding:28px 28px 24px; margin-bottom:1.4rem;
                 box-shadow:0 12px 40px rgba(255,107,53,0.3);">
         <div style="font-size:1.7rem; font-weight:900; color:white; margin-bottom:4px;">
-            👋 Hi, {vendor_name}!
+            👋 Hi, {display_name}!
         </div>
         <div style="color:rgba(255,255,255,0.85); font-size:1rem;">
             Ready to find the perfect stall today? All tools are in the sidebar 👈

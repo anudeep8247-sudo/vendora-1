@@ -1,7 +1,6 @@
 import streamlit as st
 import plotly.express as px
 import sys, os
-from datetime import datetime
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from data import (
     MARKETS, CATEGORIES, generate_stall_map, apply_css, require_login, show_back_button,
@@ -141,20 +140,25 @@ else:
         st.caption(f"Zone: {info['Zone']}  |  Price: ₹{info['Price (₹)']}  |  Score: {sc}/100")
 
         if st.button("✅ Confirm Booking", type="primary", width="stretch"):
-            if vendor_name and phone:
+            clean_phone = phone.strip()
+            if not vendor_name.strip():
+                st.error("Please enter your name or business name.")
+            elif not clean_phone.isdigit() or len(clean_phone) != 10:
+                st.error("Please enter a valid 10-digit phone number.")
+            else:
                 add_booking(
                     market_name=market_name,
                     stall_id=selected_id,
-                    vendor_name=vendor_name,
-                    phone=phone,
+                    vendor_name=vendor_name.strip(),
+                    phone=clean_phone,
                     category=category,
                     zone=info['Zone'],
                     price=int(info['Price (₹)']),
                 )
-                adjust_vendor_reliability(vendor_name, 2)
+                adjust_vendor_reliability(vendor_name.strip(), 2)
                 st.success(
                     f"**Booking Confirmed!**\n\n"
-                    f"Stall **{selected_id}** at **{market_name}** is reserved for **{vendor_name}**."
+                    f"Stall **{selected_id}** at **{market_name}** is reserved for **{vendor_name.strip()}**."
                 )
                 st.info(
                     "📋 Cancellations allowed up to 24 hours before market day. "
@@ -162,8 +166,6 @@ else:
                 )
                 st.balloons()
                 st.rerun()
-            else:
-                st.error("Please fill in your name and phone number to confirm.")
 
 # ── Active Booking & Cancellation Panel ──────────────────────────────────────
 st.divider()

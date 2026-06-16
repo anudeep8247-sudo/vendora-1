@@ -130,7 +130,7 @@ if find:
         for i, rec in enumerate(recs):
             if i >= len(card_styles):
                 break
-            css_cls, border_color, badge, tagline = card_styles[i]
+            css_cls, border_color, badge, _ = card_styles[i]
 
             # Why explanation
             strengths = []
