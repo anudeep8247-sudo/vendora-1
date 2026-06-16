@@ -4,10 +4,11 @@ import plotly.graph_objects as go
 import pandas as pd
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css  # FIX: added apply_css
+from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css, require_login  # FIX: added apply_css
 
 st.set_page_config(page_title="Best Markets — Vendora", page_icon="⭐", layout="wide")
 apply_css()  # FIX: was missing — sidebar was white on this page
+require_login()
 st.title("⭐ Best Market Recommender")
 st.caption("Get ranked market recommendations based on your food category and profit potential")
 

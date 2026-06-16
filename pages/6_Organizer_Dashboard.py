@@ -4,12 +4,18 @@ import plotly.graph_objects as go
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 from data import (
-    MARKETS, VENDORS, generate_stall_map, apply_css,
+    MARKETS, VENDORS, generate_stall_map, apply_css, require_login, get_user_role,
     get_market_bookings,
 )
 
 st.set_page_config(page_title="Organizer Dashboard — Vendora", page_icon="📊", layout="wide")
 apply_css()  # FIX: was missing — sidebar was white on this page
+require_login()
+if get_user_role() != 'organizer':
+    st.error("Organizer access is required for this dashboard.")
+    st.page_link("Home.py", label="← Back to Home")
+    st.stop()
+
 st.title("📊 Organizer Dashboard")
 st.caption("Manage occupancy, track revenue, and monitor vendor allocation for your market")
 

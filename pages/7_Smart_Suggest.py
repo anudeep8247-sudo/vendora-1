@@ -3,10 +3,11 @@ import plotly.graph_objects as go
 import pandas as pd
 import sys, os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
-from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css
+from data import MARKETS, CATEGORIES, REVENUE_DATA, apply_css, require_login
 
 st.set_page_config(page_title="Smart Suggest — Vendora", page_icon="🎯", layout="wide")
 apply_css()
+require_login()
 
 st.markdown("""
 <div style="margin-bottom:4px;">
